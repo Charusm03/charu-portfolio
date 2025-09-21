@@ -1,0 +1,1999 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Charu S M | Developer Dashboard</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap');
+
+        :root {
+            --bg-primary: #0d1117;
+            --bg-secondary: #161b22;
+            --bg-tertiary: #21262d;
+            --text-primary: #f0f6fc;
+            --text-secondary: #8b949e;
+            --text-muted: #6e7681;
+            --border-default: #30363d;
+            --border-muted: #21262d;
+            --accent-green: #00d084;
+            --accent-blue: #58a6ff;
+            --accent-purple: #a5a5ff;
+            --accent-orange: #ffa657;
+            --accent-red: #f85149;
+            --accent-yellow: #f1e05a;
+            --shadow-glow: 0 0 20px rgba(0, 208, 132, 0.3);
+            --gradient-primary: linear-gradient(135deg, #00d084 0%, #58a6ff 100%);
+            --gradient-secondary: linear-gradient(45deg, #a5a5ff, #ffa657);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        .matrix-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            opacity: 0.3;
+        }
+
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 70px;
+            background: rgba(13, 17, 23, 0.95);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border-default);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 2rem;
+            z-index: 1000;
+            transition: all 0.3s ease;
+        }
+
+        .navbar.scrolled {
+            background: rgba(13, 17, 23, 0.98);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+        }
+
+        .nav-brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-family: 'Fira Code', monospace;
+            font-weight: 600;
+            font-size: 1.2rem;
+            color: var(--text-primary);
+            text-decoration: none;
+        }
+
+        .nav-brand::before {
+            content: '>';
+            color: var(--accent-green);
+            font-size: 1.5rem;
+        }
+
+        .nav-menu {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+            align-items: center;
+        }
+
+        .nav-item a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-weight: 500;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .nav-item a:hover,
+        .nav-item a.active {
+            color: var(--text-primary);
+            background: rgba(88, 166, 255, 0.1);
+        }
+
+        .nav-item a.active::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 20px;
+            height: 2px;
+            background: var(--accent-green);
+            border-radius: 1px;
+        }
+
+        .page-container {
+            margin-top: 70px;
+            min-height: calc(100vh - 70px);
+        }
+
+        .dashboard {
+            display: grid;
+            grid-template-columns: 280px 1fr;
+            gap: 2rem;
+            padding: 2rem;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .sidebar {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-default);
+            border-radius: 12px;
+            padding: 1.5rem;
+            height: fit-content;
+            position: sticky;
+            top: 90px;
+        }
+
+        .sidebar-section {
+            margin-bottom: 2rem;
+        }
+
+        .sidebar-title {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            margin-bottom: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .sidebar-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+        }
+
+        .sidebar-item:hover {
+            background: rgba(88, 166, 255, 0.1);
+            color: var(--text-primary);
+        }
+
+        .sidebar-item.active {
+            background: var(--gradient-primary);
+            color: white;
+        }
+
+        .sidebar-icon {
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .main-content {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-default);
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        .content-header {
+            background: var(--bg-tertiary);
+            border-bottom: 1px solid var(--border-default);
+            padding: 1.5rem 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .content-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .content-body {
+            padding: 2rem;
+        }
+
+        .hero-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 3rem;
+            align-items: center;
+            margin-bottom: 3rem;
+        }
+
+        .hero-content h1 {
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            background: var(--gradient-primary);
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+            flex: auto;
+            margin-left: 2px;
+        }
+
+        .hero-subtitle {
+            font-size: 1.2rem;
+            color: var(--text-secondary);
+            margin-bottom: 1.5rem;
+        }
+
+        .hero-description {
+            color: var(--text-secondary);
+            line-height: 1.7;
+            margin-bottom: 2rem;
+        }
+
+        .hero-actions {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .btn-primary {
+            background: var(--gradient-primary);
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-glow);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: var(--text-primary);
+            padding: 0.75rem 1.5rem;
+            border: 1px solid var(--border-default);
+            border-radius: 8px;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .btn-secondary:hover {
+            border-color: var(--accent-green);
+            color: var(--accent-green);
+        }
+
+        .terminal-widget {
+            background: var(--bg-primary);
+            border: 2px solid var(--border-default);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .terminal-header {
+            background: var(--bg-tertiary);
+            padding: 0.75rem 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            border-bottom: 1px solid var(--border-default);
+        }
+
+        .terminal-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+
+        .terminal-dot.red {
+            background: var(--accent-red);
+        }
+
+        .terminal-dot.yellow {
+            background: var(--accent-yellow);
+        }
+
+        .terminal-dot.green {
+            background: var(--accent-green);
+        }
+
+        .terminal-title {
+            margin-left: 1rem;
+            font-family: 'Fira Code', monospace;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+
+        .terminal-body {
+            padding: 1.5rem;
+            font-family: 'Fira Code', monospace;
+            font-size: 0.85rem;
+            line-height: 1.6;
+            height: 400px;
+            overflow-y: auto;
+        }
+
+        .terminal-line {
+            margin: 0.5rem 0;
+            display: flex;
+            align-items: flex-start;
+        }
+
+        .terminal-prompt {
+            color: var(--accent-green);
+            margin-right: 0.5rem;
+            font-weight: 600;
+        }
+
+        .terminal-command {
+            color: var(--accent-blue);
+        }
+
+        .terminal-output {
+            color: var(--text-secondary);
+        }
+
+        .typing-cursor {
+            background: var(--accent-green);
+            width: 8px;
+            height: 16px;
+            display: inline-block;
+            animation: cursor-blink 1s infinite;
+            margin-left: 2px;
+        }
+
+        @keyframes cursor-blink {
+
+            0%,
+            50% {
+                opacity: 1;
+            }
+
+            51%,
+            100% {
+                opacity: 0;
+            }
+        }
+
+        .coding-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 3rem;
+        }
+
+        .platform-card {
+            background: var(--bg-primary);
+            border: 2px solid var(--border-default);
+            border-radius: 12px;
+            padding: 1.5rem;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .platform-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: var(--gradient-primary);
+        }
+
+        .platform-card:hover {
+            border-color: var(--accent-green);
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-glow);
+        }
+
+        .platform-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+        }
+
+        .platform-logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .platform-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: white;
+        }
+
+        .leetcode {
+            background: #ffa116;
+        }
+
+        .codechef {
+            background: #5b4638;
+        }
+
+        .geeksforgeeks {
+            background: #0f9d58;
+        }
+
+        .codeforces {
+            background: #1976d2;
+        }
+
+        .hackerrank {
+            background: #2ec866;
+        }
+
+        .platform-name {
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .platform-link {
+            color: var(--accent-blue);
+            text-decoration: none;
+            font-size: 0.85rem;
+        }
+
+        .platform-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+            gap: 1rem;
+        }
+
+        .stat-item {
+            text-align: center;
+            padding: 0.75rem 0.5rem;
+            background: var(--bg-secondary);
+            border-radius: 6px;
+            min-height: 70px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .stat-value {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--accent-green);
+            display: block;
+            margin-bottom: 0.25rem;
+            word-break: break-word;
+            text-align: center;
+        }
+
+        .stat-label {
+            font-size: 0.7rem;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            text-align: center;
+            line-height: 1.2;
+        }
+
+        .progress-section {
+            margin-bottom: 3rem;
+        }
+
+        .progress-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1.5rem;
+        }
+
+        .progress-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+        }
+
+        .progress-card {
+            background: var(--bg-primary);
+            border: 1px solid var(--border-default);
+            border-radius: 8px;
+            padding: 1rem;
+        }
+
+        .progress-title {
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: var(--text-primary);
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: var(--bg-secondary);
+            border-radius: 4px;
+            overflow: hidden;
+            margin-bottom: 0.5rem;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: var(--gradient-primary);
+            border-radius: 4px;
+            transition: width 1s ease;
+        }
+
+        .progress-text {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            display: flex;
+            justify-content: space-between;
+        }
+
+        /* Gallery Styles */
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .gallery-item {
+            background: var(--bg-primary);
+            border: 1px solid var(--border-default);
+            border-radius: 12px;
+            padding: 1.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .gallery-item:hover {
+            border-color: var(--accent-green);
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-glow);
+        }
+
+        .gallery-item img,
+        .gallery-item video {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+        }
+
+        .gallery-item h3 {
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+            font-size: 1.1rem;
+        }
+
+        .gallery-item p {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+
+        .page-content {
+            display: none;
+        }
+
+        .page-content.active {
+            display: block;
+        }
+
+        .single-column-layout {
+            grid-template-columns: 1fr;
+            max-width: 800px;
+            margin: 0 auto;
+            text-align: center;
+        }
+
+        @media (max-width: 1024px) {
+            .dashboard {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+
+            .sidebar {
+                position: relative;
+                top: 0;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .navbar {
+                padding: 0 1rem;
+            }
+
+            .nav-menu {
+                display: none;
+            }
+
+            .dashboard {
+                padding: 1rem;
+            }
+
+            .hero-section {
+                grid-template-columns: 1fr;
+                text-align: center;
+            }
+
+            .hero-content h1 {
+                font-size: 2rem;
+            }
+
+            .coding-stats {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--bg-secondary);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--border-default);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--accent-green);
+        }
+    </style>
+</head>
+
+<body>
+    <canvas class="matrix-canvas" id="matrixCanvas"></canvas>
+
+    <nav class="navbar" id="navbar">
+        <a href="#" class="nav-brand" onclick="loadPage('dashboard')">charu.dev</a>
+        <ul class="nav-menu">
+            <li class="nav-item"><a href="#" class="active" onclick="loadPage('dashboard')">Dashboard</a></li>
+            <li class="nav-item"><a href="#" onclick="loadPage('about')">About</a></li>
+            <li class="nav-item"><a href="#" onclick="loadPage('projects')">Projects</a></li>
+            <li class="nav-item"><a href="#" onclick="loadPage('experience')">Experience</a></li>
+            <li class="nav-item"><a href="#" onclick="loadPage('blog')">Blog</a></li>
+            <li class="nav-item"><a href="#" onclick="loadPage('contact')">Contact</a></li>
+        </ul>
+    </nav>
+
+    <div class="page-container">
+        <div class="dashboard">
+            <aside class="sidebar">
+                <div class="sidebar-section">
+                    <div class="sidebar-title">Navigation</div>
+                    <div class="sidebar-item active" onclick="loadPage('dashboard')">
+                        <div class="sidebar-icon">🏠</div>
+                        <span>Dashboard</span>
+                    </div>
+                    <div class="sidebar-item" onclick="loadPage('about')">
+                        <div class="sidebar-icon">👨‍💻</div>
+                        <span>About</span>
+                    </div>
+                    <div class="sidebar-item" onclick="loadPage('projects')">
+                        <div class="sidebar-icon">💻</div>
+                        <span>Projects</span>
+                    </div>
+                    <div class="sidebar-item" onclick="loadPage('experience')">
+                        <div class="sidebar-icon">💼</div>
+                        <span>Experience</span>
+                    </div>
+                    <div class="sidebar-item" onclick="loadPage('blog')">
+                        <div class="sidebar-icon">📝</div>
+                        <span>Blog</span>
+                    </div>
+                </div>
+
+                <div class="sidebar-section">
+                    <div class="sidebar-title">Platforms</div>
+                    <div class="sidebar-item" onclick="openPlatform('leetcode')">
+                        <div class="sidebar-icon">🔥</div>
+                        <span>LeetCode</span>
+                    </div>
+                    <div class="sidebar-item" onclick="openPlatform('codechef')">
+                        <div class="sidebar-icon">👨‍🍳</div>
+                        <span>CodeChef</span>
+                    </div>
+                    <div class="sidebar-item" onclick="openPlatform('geeksforgeeks')">
+                        <div class="sidebar-icon">🤓</div>
+                        <span>GeeksforGeeks</span>
+                    </div>
+                    <div class="sidebar-item" onclick="openPlatform('codeforces')">
+                        <div class="sidebar-icon">⚡</div>
+                        <span>Codeforces</span>
+                    </div>
+                    <div class="sidebar-item" onclick="openPlatform('hackerrank')">
+                        <div class="sidebar-icon">🏆</div>
+                        <span>HackerRank</span>
+                    </div>
+                </div>
+
+                <div class="sidebar-section">
+                    <div class="sidebar-title">Quick Actions</div>
+                    <div class="sidebar-item" onclick="loadPage('contact')">
+                        <div class="sidebar-icon">📧</div>
+                        <span>Contact Me</span>
+                    </div>
+                    <div class="sidebar-item" onclick="downloadResume()">
+                        <div class="sidebar-icon">📄</div>
+                        <span>Download CV</span>
+                    </div>
+                </div>
+            </aside>
+
+            <main class="main-content">
+                <div class="content-header">
+                    <h1 class="content-title" id="pageTitle">Developer Dashboard</h1>
+                    <div class="content-actions">
+                        <span class="last-updated">Last updated: <span id="lastUpdated">Just now</span></span>
+                    </div>
+                </div>
+
+                <div class="content-body" id="mainContent">
+                    <!-- Dashboard Content -->
+                    <div id="dashboardContent" class="page-content active">
+                        <section class="hero-section">
+                            <div class="hero-content">
+                                <h1>Charu S M</h1>
+                                <p class="hero-subtitle">Full-Stack Developer & AI Engineer</p>
+                                <p class="hero-description">
+                                    Passionate about building innovative solutions through code. Specializing in
+                                    machine learning, computer vision, and full-stack development with a focus
+                                    on creating meaningful impact.
+                                </p>
+                                <div class="hero-actions">
+                                    <button class="btn-primary" onclick="loadPage('projects')">
+                                        View Projects →
+                                    </button>
+                                    <button class="btn-secondary" onclick="loadPage('contact')">
+                                        Get In Touch
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div class="terminal-widget">
+                                <div class="terminal-header">
+                                    <div class="terminal-dot red"></div>
+                                    <div class="terminal-dot yellow"></div>
+                                    <div class="terminal-dot green"></div>
+                                    <div class="terminal-title">charu@dev:~$ status</div>
+                                </div>
+                                <div class="terminal-body" id="terminalContent">
+                                    <div class="terminal-line">
+                                        <span class="terminal-prompt">charu@dev:~$</span>
+                                        <span class="terminal-command">whoami</span>
+                                    </div>
+                                    <div class="terminal-line">
+                                        <span class="terminal-output">Charu S M - Full-Stack AI Engineer</span>
+                                    </div>
+                                    <div class="terminal-line">
+                                        <span class="terminal-prompt">charu@dev:~$</span>
+                                        <span class="terminal-command">cat current_status.txt</span>
+                                    </div>
+                                    <div class="terminal-line">
+                                        <span class="terminal-output">Status: Ready for new opportunities!</span>
+                                    </div>
+                                    <div class="terminal-line">
+                                        <span class="terminal-prompt">charu@dev:~$</span>
+                                        <span class="terminal-command">ls skills/</span>
+                                    </div>
+                                    <div class="terminal-line">
+                                        <span class="terminal-output">Python JavaScript React Flask ML OpenCV IoT</span>
+                                    </div>
+                                    <div class="terminal-line">
+                                        <span class="terminal-prompt">charu@dev:~$</span>
+                                        <span class="typing-cursor"></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </section>
+
+                        <section class="coding-stats">
+                            <div class="platform-card">
+                                <div class="platform-header">
+                                    <div class="platform-logo">
+                                        <div class="platform-icon leetcode">LC</div>
+                                        <div>
+                                            <div class="platform-name">LeetCode</div>
+                                            <a href="https://leetcode.com/u/Charu_sm_03/" target="_blank"
+                                                class="platform-link">@Charu_sm_03</a>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="platform-stats">
+                                    <div class="stat-item">
+                                        <span class="stat-value" id="leetcode-solved">470+</span>
+                                        <span class="stat-label">Solved</span>
+                                    </div>
+                                    <div class="stat-item">
+                                        <span class="stat-value" id="leetcode-ranking">185,839</span>
+                                        <span class="stat-label">Ranking</span>
+                                    </div>
+                                    <div class="stat-item">
+                                        <span class="stat-value" id="leetcode-streak">70</span>
+                                        <span class="stat-label">Streak</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="platform-card">
+                                <div class="platform-header">
+                                    <div class="platform-logo">
+                                        <div class="platform-icon codechef">CC</div>
+                                        <div>
+                                            <div class="platform-name">CodeChef</div>
+                                            <a href="https://www.codechef.com/users/charusm03" target="_blank"
+                                                class="platform-link">@charusm03</a>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="platform-stats">
+                                    <div class="stat-item">
+                                        <span class="stat-value" id="codechef-rating">972</span>
+                                        <span class="stat-label">Rating</span>
+                                    </div>
+                                    <div class="stat-item">
+                                        <span class="stat-value" id="codechef-solved">132</span>
+                                        <span class="stat-label">Solved</span>
+                                    </div>
+                                    <div class="stat-item">
+                                        <span class="stat-value" id="codechef-contests">1</span>
+                                        <span class="stat-label">Contests</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="platform-card">
+                                <div class="platform-header">
+                                    <div class="platform-logo">
+                                        <div class="platform-icon geeksforgeeks">GFG</div>
+                                        <div>
+                                            <div class="platform-name">GeeksforGeeks</div>
+                                            <a href="https://www.geeksforgeeks.org/user/smcharxvv/" target="_blank"
+                                                class="platform-link">@smcharxvv</a>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="platform-stats">
+                                    <div class="stat-item">
+                                        <span class="stat-value" id="gfg-score">25</span>
+                                        <span class="stat-label">Score</span>
+                                    </div>
+                                    <div class="stat-item">
+                                        <span class="stat-value" id="gfg-solved">15</span>
+                                        <span class="stat-label">Solved</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </section>
+
+                        <section class="progress-section">
+                            <div class="progress-header">
+                                <h2>Progress Tracker</h2>
+                            </div>
+                            <div class="progress-grid">
+                                <div class="progress-card">
+                                    <div class="progress-title">DSA Problems Solved</div>
+                                    <div class="progress-bar">
+                                        <div class="progress-fill" style="width: 61%"></div>
+                                    </div>
+                                    <div class="progress-text">
+                                        <span>607/1000</span>
+                                        <span>61%</span>
+                                    </div>
+                                </div>
+                                <div class="progress-card">
+                                    <div class="progress-title">Contest Participation</div>
+                                    <div class="progress-bar">
+                                        <div class="progress-fill" style="width: 46%"></div>
+                                    </div>
+                                    <div class="progress-text">
+                                        <span>23/50</span>
+                                        <span>46%</span>
+                                    </div>
+                                </div>
+                                <div class="progress-card">
+                                    <div class="progress-title">Project Completion</div>
+                                    <div class="progress-bar">
+                                        <div class="progress-fill" style="width: 85%"></div>
+                                    </div>
+                                    <div class="progress-text">
+                                        <span>17/20</span>
+                                        <span>85%</span>
+                                    </div>
+                                </div>
+                                <div class="progress-card">
+                                    <div class="progress-title">Skills Mastered</div>
+                                    <div class="progress-bar">
+                                        <div class="progress-fill" style="width: 72%"></div>
+                                    </div>
+                                    <div class="progress-text">
+                                        <span>18/25</span>
+                                        <span>72%</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </section>
+                    </div>
+
+                    <!-- About Page Content -->
+                    <div id="aboutContent" class="page-content">
+                        <section class="hero-section">
+                            <div class="hero-content">
+                                <h1>About Me</h1>
+                                <p class="hero-subtitle">Building the future through code and innovation</p>
+                                <p class="hero-description">
+                                    I'm a passionate frontend developer currently pursuing my Bachelor's in Information
+                                    Technology at Easwari Engineering College, Chennai. With a strong foundation in
+                                    programming and a keen eye for user experience, I love creating innovative solutions
+                                    that bridge technology and real-world applications.
+                                    <br><br>
+                                    My journey spans across various domains - from machine learning and computer vision
+                                    to web development and embedded systems. I believe in continuous learning and
+                                    adaptability, always staying curious about emerging technologies.
+                                    <br><br>
+                                    When I'm not coding, you'll find me contributing to various clubs and initiatives,
+                                    from energy conservation events to social awareness campaigns.
+                                </p>
+                            </div>
+
+                            <div class="terminal-widget">
+                                <div class="terminal-header">
+                                    <div class="terminal-dot red"></div>
+                                    <div class="terminal-dot yellow"></div>
+                                    <div class="terminal-dot green"></div>
+                                    <div class="terminal-title">charu@dev:~$ cat about.json</div>
+                                </div>
+                                <div class="terminal-body">
+                                    <div class="terminal-line">
+                                        <span class="terminal-output">{</span>
+                                    </div>
+                                    <div class="terminal-line">
+                                        <span class="terminal-output"> "name": "Charu S M",</span>
+                                    </div>
+                                    <div class="terminal-line">
+                                        <span class="terminal-output"> "role": "Full-Stack AI Engineer",</span>
+                                    </div>
+                                    <div class="terminal-line">
+                                        <span class="terminal-output"> "location": "Chennai, Tamil Nadu",</span>
+                                    </div>
+                                    <div class="terminal-line">
+                                        <span class="terminal-output"> "education": "IT @ Easwari Engineering",</span>
+                                    </div>
+                                    <div class="terminal-line">
+                                        <span class="terminal-output"> "passion": "Problem Solving & Innovation",</span>
+                                    </div>
+                                    <div class="terminal-line">
+                                        <span class="terminal-output"> "motto": "Code. Create. Impact."</span>
+                                    </div>
+                                    <div class="terminal-line">
+                                        <span class="terminal-output">}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </section>
+
+                        <!-- Skills Section -->
+                        <div class="coding-stats">
+                            <!-- Programming Languages -->
+                            <div class="platform-card">
+                                <div class="platform-header">
+                                    <div class="platform-logo">
+                                        <div class="platform-icon" style="background: #2980b9;">💻</div>
+                                        <div class="platform-name">Programming Languages</div>
+                                    </div>
+                                </div>
+                                <div class="platform-stats">
+                                    <div class="stat-item">
+                                        <span class="stat-value">C++</span>
+                                    </div>
+                                    <div class="stat-item">
+                                        <span class="stat-value">Java</span>
+                                    </div>
+                                    <div class="stat-item">
+                                        <span class="stat-value">C</span>
+                                    </div>
+                                    <div class="stat-item">
+                                        <span class="stat-value">Python</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Web Development -->
+                            <div class="platform-card">
+                                <div class="platform-header">
+                                    <div class="platform-logo">
+                                        <div class="platform-icon" style="background: #e67e22;">🌐</div>
+                                        <div class="platform-name">App/Web Development</div>
+                                    </div>
+                                </div>
+                                <div class="platform-stats">
+                                    <div class="stat-item">
+                                        <span class="stat-value">Flutter</span>
+                                    </div>
+                                    <div class="stat-item">
+                                        <span class="stat-value">HTML5</span>
+                                    </div>
+                                    <div class="stat-item">
+                                        <span class="stat-value">CSS3</span>
+                                    </div>
+                                    <div class="stat-item">
+                                        <span class="stat-value">JavaScript</span>
+                                    </div>
+                                    <div class="stat-item">
+                                        <span class="stat-value">React</span>
+                                    </div>
+                                    <div class="stat-item">
+                                        <span class="stat-value">Node.js</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- AI/ML -->
+                            <div class="platform-card">
+                                <div class="platform-header">
+                                    <div class="platform-logo">
+                                        <div class="platform-icon" style="background: #9b59b6;">🤖</div>
+                                        <div class="platform-name">AI/ML</div>
+                                    </div>
+                                </div>
+                                <div class="platform-stats">
+                                    <div class="stat-item">
+                                        <span class="stat-value">Object Detection</span>
+                                    </div>
+                                    <div class="stat-item">
+                                        <span class="stat-value">Deep Learning</span>
+                                    </div>
+                                    <div class="stat-item">
+                                        <span class="stat-value">Computer Vision</span>
+                                    </div>
+                                    <div class="stat-item">
+                                        <span class="stat-value">OpenCV</span>
+                                    </div>
+                                    <div class="stat-item">
+                                        <span class="stat-value">TensorFlow</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Databases -->
+                            <div class="platform-card">
+                                <div class="platform-header">
+                                    <div class="platform-logo">
+                                        <div class="platform-icon" style="background: #8e44ad;">🗄️</div>
+                                        <div class="platform-name">Databases</div>
+                                    </div>
+                                </div>
+                                <div class="platform-stats">
+                                    <div class="stat-item">
+                                        <span class="stat-value">MySQL</span>
+                                    </div>
+                                    <div class="stat-item">
+                                        <span class="stat-value">MongoDB</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Tools -->
+                            <div class="platform-card">
+                                <div class="platform-header">
+                                    <div class="platform-logo">
+                                        <div class="platform-icon" style="background: #34495e;">🛠️</div>
+                                        <div class="platform-name">Tools</div>
+                                    </div>
+                                </div>
+                                <div class="platform-stats">
+                                    <div class="stat-item">
+                                        <span class="stat-value">Git</span>
+                                    </div>
+                                    <div class="stat-item">
+                                        <span class="stat-value">GitHub</span>
+                                    </div>
+                                    <div class="stat-item">
+                                        <span class="stat-value">VS Code</span>
+                                    </div>
+                                    <div class="stat-item">
+                                        <span class="stat-value">Jupyter</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Design Tools -->
+                            <div class="platform-card">
+                                <div class="platform-header">
+                                    <div class="platform-logo">
+                                        <div class="platform-icon" style="background: #e67e22;">🎨</div>
+                                        <div class="platform-name">Design Tools</div>
+                                    </div>
+                                </div>
+                                <div class="platform-stats">
+                                    <div class="stat-item">
+                                        <span class="stat-value">Canva</span>
+                                    </div>
+                                    <div class="stat-item">
+                                        <span class="stat-value">Adobe Illustrator</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Hardware & Simulation -->
+                            <div class="platform-card">
+                                <div class="platform-header">
+                                    <div class="platform-logo">
+                                        <div class="platform-icon" style="background: #27ae60;">⚙️</div>
+                                        <div class="platform-name">Hardware & Simulation</div>
+                                    </div>
+                                </div>
+                                <div class="platform-stats">
+                                    <div class="stat-item">
+                                        <span class="stat-value">Arduino</span>
+                                    </div>
+                                    <div class="stat-item">
+                                        <span class="stat-value">Network Simulation</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Projects Page Content -->
+                    <div id="projectsContent" class="page-content">
+                        <section class="hero-section">
+                            <div class="hero-content">
+                                <h1>Featured Projects</h1>
+                                <p class="hero-subtitle">Innovative solutions that bridge technology and real-world
+                                    impact</p>
+                                <p class="hero-description">
+                                    A showcase of my journey in building applications that solve complex problems,
+                                    from AI-powered systems to full-stack platforms that empower communities.
+                                </p>
+                            </div>
+
+                            <div class="terminal-widget">
+                                <div class="terminal-header">
+                                    <div class="terminal-dot red"></div>
+                                    <div class="terminal-dot yellow"></div>
+                                    <div class="terminal-dot green"></div>
+                                    <div class="terminal-title">charu@dev:~$ cat projects.json</div>
+                                </div>
+                                <div class="terminal-body">
+                                    <div class="terminal-line">
+                                        <span class="terminal-output">{</span>
+                                    </div>
+                                    <div class="terminal-line">
+                                        <span class="terminal-output"> "ai_ml": "Coral Detection System",</span>
+                                    </div>
+                                    <div class="terminal-line">
+                                        <span class="terminal-output"> "fullstack": "VendorVibe Marketplace",</span>
+                                    </div>
+                                    <div class="terminal-line">
+                                        <span class="terminal-output"> "web": "Kuaibite Food Ordering",</span>
+                                    </div>
+                                    <div class="terminal-line">
+                                        <span class="terminal-output"> "iot": "Laser Security System",</span>
+                                    </div>
+                                    <div class="terminal-line">
+                                        <span class="terminal-output"> "ecommerce": "Knot & Nook",</span>
+                                    </div>
+                                    <div class="terminal-line">
+                                        <span class="terminal-output"> "prototype": "SAM Missile System"</span>
+                                    </div>
+                                    <div class="terminal-line">
+                                        <span class="terminal-output">}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </section>
+
+                        <div class="coding-stats">
+                            <div class="platform-card">
+                                <div class="platform-header">
+                                    <div class="platform-logo">
+                                        <div class="platform-icon" style="background: #00d4aa;">🐠</div>
+                                        <div>
+                                            <div class="platform-name">Coral Detection System</div>
+                                            <div class="platform-link">AI/ML • Computer Vision</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div style="padding: 1rem 0;">
+                                    <p style="color: var(--text-secondary); margin-bottom: 1rem;">
+                                        Working on an image analytics project at NIOT, detecting underwater objects
+                                        using
+                                        ML. Extracted and annotated video frames to train a YOLOv12 model for automated
+                                        object
+                                        identification in oceanographic data.
+                                    </p>
+                                    <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+                                        <span
+                                            style="background: var(--bg-secondary); padding: 0.25rem 0.5rem; border-radius: 4px; font-size: 0.8rem;">Python</span>
+                                        <span
+                                            style="background: var(--bg-secondary); padding: 0.25rem 0.5rem; border-radius: 4px; font-size: 0.8rem;">YOLOv12</span>
+                                        <span
+                                            style="background: var(--bg-secondary); padding: 0.25rem 0.5rem; border-radius: 4px; font-size: 0.8rem;">OpenCV</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="platform-card">
+                                <div class="platform-header">
+                                    <div class="platform-logo">
+                                        <div class="platform-icon" style="background: #58a6ff;">🛒</div>
+                                        <div>
+                                            <div class="platform-name">VendorVibe Marketplace</div>
+                                            <div class="platform-link">Full-Stack • MERN</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div style="padding: 1rem 0;">
+                                    <p style="color: var(--text-secondary); margin-bottom: 1rem;">
+                                        MERN stack marketplace connecting street vendors with suppliers across India.
+                                        Features Aadhaar authentication and real-time order management.
+                                    </p>
+                                    <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+                                        <span
+                                            style="background: var(--bg-secondary); padding: 0.25rem 0.5rem; border-radius: 4px; font-size: 0.8rem;">React</span>
+                                        <span
+                                            style="background: var(--bg-secondary); padding: 0.25rem 0.5rem; border-radius: 4px; font-size: 0.8rem;">Node.js</span>
+                                        <span
+                                            style="background: var(--bg-secondary); padding: 0.25rem 0.5rem; border-radius: 4px; font-size: 0.8rem;">MongoDB</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="platform-card">
+                                <div class="platform-header">
+                                    <div class="platform-logo">
+                                        <div class="platform-icon" style="background: #f39c12;">🍽️</div>
+                                        <div>
+                                            <div class="platform-name">Kuaibite – Food Ordering System</div>
+                                            <div class="platform-link">Web Application</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div style="padding: 1rem 0;">
+                                    <p style="color: var(--text-secondary); margin-bottom: 1rem;">
+                                        Built a complete ordering system with login, cart, and logout features.
+                                        Integrated backend via JSON and connected MySQL for user authentication and
+                                        order data storage.
+                                    </p>
+                                    <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+                                        <span
+                                            style="background: var(--bg-secondary); padding: 0.25rem 0.5rem; border-radius: 4px; font-size: 0.8rem;">HTML</span>
+                                        <span
+                                            style="background: var(--bg-secondary); padding: 0.25rem 0.5rem; border-radius: 4px; font-size: 0.8rem;">CSS</span>
+                                        <span
+                                            style="background: var(--bg-secondary); padding: 0.25rem 0.5rem; border-radius: 4px; font-size: 0.8rem;">JavaScript</span>
+                                        <span
+                                            style="background: var(--bg-secondary); padding: 0.25rem 0.5rem; border-radius: 4px; font-size: 0.8rem;">MySQL</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="platform-card">
+                                <div class="platform-header">
+                                    <div class="platform-logo">
+                                        <div class="platform-icon" style="background: #e74c3c;">🎨</div>
+                                        <div>
+                                            <div class="platform-name">Knot & Nook – Handicraft Website</div>
+                                            <div class="platform-link">E-Commerce • Frontend</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div style="padding: 1rem 0;">
+                                    <p style="color: var(--text-secondary); margin-bottom: 1rem;">
+                                        Designed a responsive website to display handicraft products with emphasis on
+                                        intuitive navigation and visually appealing product layouts.
+                                    </p>
+                                    <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+                                        <span
+                                            style="background: var(--bg-secondary); padding: 0.25rem 0.5rem; border-radius: 4px; font-size: 0.8rem;">HTML</span>
+                                        <span
+                                            style="background: var(--bg-secondary); padding: 0.25rem 0.5rem; border-radius: 4px; font-size: 0.8rem;">CSS</span>
+                                        <span
+                                            style="background: var(--bg-secondary); padding: 0.25rem 0.5rem; border-radius: 4px; font-size: 0.8rem;">JavaScript</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="platform-card">
+                                <div class="platform-header">
+                                    <div class="platform-logo">
+                                        <div class="platform-icon" style="background: #ffa657;">🔒</div>
+                                        <div>
+                                            <div class="platform-name">IoT Laser Security</div>
+                                            <div class="platform-link">IoT • Arduino</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div style="padding: 1rem 0;">
+                                    <p style="color: var(--text-secondary); margin-bottom: 1rem;">
+                                        Arduino-based security system using precision laser technology with
+                                        WiFi connectivity for invisible beam detection.
+                                    </p>
+                                    <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+                                        <span
+                                            style="background: var(--bg-secondary); padding: 0.25rem 0.5rem; border-radius: 4px; font-size: 0.8rem;">Arduino</span>
+                                        <span
+                                            style="background: var(--bg-secondary); padding: 0.25rem 0.5rem; border-radius: 4px; font-size: 0.8rem;">C++</span>
+                                        <span
+                                            style="background: var(--bg-secondary); padding: 0.25rem 0.5rem; border-radius: 4px; font-size: 0.8rem;">IoT</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="platform-card">
+                                <div class="platform-header">
+                                    <div class="platform-logo">
+                                        <div class="platform-icon" style="background: #2c3e50;">🚀</div>
+                                        <div>
+                                            <div class="platform-name">SAM (Surface to Air Missile) Prototype</div>
+                                            <div class="platform-link">Computer Vision • Sensors</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div style="padding: 1rem 0;">
+                                    <p style="color: var(--text-secondary); margin-bottom: 1rem;">
+                                        Prototype system using computer vision for target detection and tracking with
+                                        face recognition capabilities and sensor integration.
+                                    </p>
+                                    <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+                                        <span
+                                            style="background: var(--bg-secondary); padding: 0.25rem 0.5rem; border-radius: 4px; font-size: 0.8rem;">Computer
+                                            Vision</span>
+                                        <span
+                                            style="background: var(--bg-secondary); padding: 0.25rem 0.5rem; border-radius: 4px; font-size: 0.8rem;">Face
+                                            Detection</span>
+                                        <span
+                                            style="background: var(--bg-secondary); padding: 0.25rem 0.5rem; border-radius: 4px; font-size: 0.8rem;">Matplotlib</span>
+                                        <span
+                                            style="background: var(--bg-secondary); padding: 0.25rem 0.5rem; border-radius: 4px; font-size: 0.8rem;">Sensors</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Experience Page Content -->
+                    <div id="experienceContent" class="page-content">
+                        <section class="hero-section">
+                            <div class="hero-content">
+                                <h1>Experience & Leadership</h1>
+                                <p class="hero-subtitle">Building communities and driving innovation</p>
+                                <p class="hero-description">
+                                    My journey through various leadership roles, from technical documentation to
+                                    community service, showcasing growth in both technical and soft skills.
+                                </p>
+                            </div>
+
+                            <div class="terminal-widget">
+                                <div class="terminal-header">
+                                    <div class="terminal-dot red"></div>
+                                    <div class="terminal-dot yellow"></div>
+                                    <div class="terminal-dot green"></div>
+                                    <div class="terminal-title">charu@dev:~$ cat experience.json</div>
+                                </div>
+                                <div class="terminal-body">
+                                    <div class="terminal-line">
+                                        <span class="terminal-output">{</span>
+                                    </div>
+                                    <div class="terminal-line">
+                                        <span class="terminal-output"> "current": "Design Head @ Techsaavy",</span>
+                                    </div>
+                                    <div class="terminal-line">
+                                        <span class="terminal-output"> "intern": "NIOT Deep Sea Technology",</span>
+                                    </div>
+                                    <div class="terminal-line">
+                                        <span class="terminal-output"> "leadership": [</span>
+                                    </div>
+                                    <div class="terminal-line">
+                                        <span class="terminal-output"> "Energy Club Documentation",</span>
+                                    </div>
+                                    <div class="terminal-line">
+                                        <span class="terminal-output"> "Campus Life Content",</span>
+                                    </div>
+                                    <div class="terminal-line">
+                                        <span class="terminal-output"> "NSS Volunteer",</span>
+                                    </div>
+                                    <div class="terminal-line">
+                                        <span class="terminal-output"> "Science Association"</span>
+                                    </div>
+                                    <div class="terminal-line">
+                                        <span class="terminal-output"> ]</span>
+                                    </div>
+                                    <div class="terminal-line">
+                                        <span class="terminal-output">}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </section>
+
+                        <div class="coding-stats">
+                            <div class="platform-card">
+                                <div class="platform-header">
+                                    <div class="platform-logo">
+                                        <div class="platform-icon" style="background: #1abc9c;">🌊</div>
+                                        <div>
+                                            <div class="platform-name">Deep Sea Technology Intern</div>
+                                            <div class="platform-link">National Institute of Ocean Technology • Jun 2025
+                                                - Jul 2025</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div style="padding: 1rem 0;">
+                                    <p style="color: var(--text-secondary); margin-bottom: 1rem;">
+                                        Currently exploring how technologies like Artificial Intelligence, Machine
+                                        Learning,
+                                        and data analysis can be applied in ocean research. Gaining hands-on experience
+                                        with
+                                        marine data processing, predictive analysis, and intelligent systems supporting
+                                        sustainable
+                                        ocean development.
+                                    </p>
+                                </div>
+                            </div>
+
+                            <div class="platform-card">
+                                <div class="platform-header">
+                                    <div class="platform-logo">
+                                        <div class="platform-icon" style="background: #f39c12;">🎨</div>
+                                        <div>
+                                            <div class="platform-name">Design Head</div>
+                                            <div class="platform-link">Techsaavy Club • Sep 2025 - Present</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div style="padding: 1rem 0;">
+                                    <p style="color: var(--text-secondary); margin-bottom: 1rem;">
+                                        Channel creativity into every visual the club shares, transforming ideas into
+                                        eye-catching posters, vibrant magazine layouts, and cohesive digital
+                                        experiences.
+                                        Shape the club's visual identity through bold color stories and inventive
+                                        typography.
+                                    </p>
+                                </div>
+                            </div>
+
+                            <div class="platform-card">
+                                <div class="platform-header">
+                                    <div class="platform-logo">
+                                        <div class="platform-icon" style="background: #28a745;">📝</div>
+                                        <div>
+                                            <div class="platform-name">Junior Documentation Head</div>
+                                            <div class="platform-link">Energy Club • Jun 2024 - Present</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div style="padding: 1rem 0;">
+                                    <p style="color: var(--text-secondary); margin-bottom: 1rem;">
+                                        Leading documentation strategies for energy conservation initiatives across
+                                        campus.
+                                        Student Coordinator for Negizhi paper presentation, driving research in
+                                        sustainable
+                                        energy solutions and technical documentation workflows.
+                                    </p>
+                                </div>
+                            </div>
+
+                            <div class="platform-card">
+                                <div class="platform-header">
+                                    <div class="platform-logo">
+                                        <div class="platform-icon" style="background: #17a2b8;">✍️</div>
+                                        <div>
+                                            <div class="platform-name">Content Team Member</div>
+                                            <div class="platform-link">Campus Life Club • May 2024 - Present</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div style="padding: 1rem 0;">
+                                    <p style="color: var(--text-secondary); margin-bottom: 1rem;">
+                                        Developing compelling narratives for major campus events including Swagat,
+                                        Talentia, and Utsav. Created viral social media campaigns reaching 10,000+
+                                        students
+                                        across multiple platforms with comprehensive event documentation.
+                                    </p>
+                                </div>
+                            </div>
+
+                            <div class="platform-card">
+                                <div class="platform-header">
+                                    <div class="platform-logo">
+                                        <div class="platform-icon" style="background: #6f42c1;">🤝</div>
+                                        <div>
+                                            <div class="platform-name">Volunteer Content Writer</div>
+                                            <div class="platform-link">NSS Club • Oct 2023 - Present</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div style="padding: 1rem 0;">
+                                    <p style="color: var(--text-secondary); margin-bottom: 1rem;">
+                                        Active participation in community service including library renovation projects
+                                        and beach cleaning drives. Created impactful content campaigns that inspired
+                                        student
+                                        participation in social causes and community development.
+                                    </p>
+                                </div>
+                            </div>
+
+                            <div class="platform-card">
+                                <div class="platform-header">
+                                    <div class="platform-logo">
+                                        <div class="platform-icon" style="background: #fd7e14;">🔬</div>
+                                        <div>
+                                            <div class="platform-name">Joint Secretary</div>
+                                            <div class="platform-link">Science Association • Nov 2023 - Apr 2024</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div style="padding: 1rem 0;">
+                                    <p style="color: var(--text-secondary); margin-bottom: 1rem;">
+                                        Developed engaging science-based events and activities that increased student
+                                        participation by 40%. Successfully bridged academic research with student
+                                        understanding
+                                        through innovative program development and technical workshops.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Gallery Page Content -->
+                    <div id="galleryContent" class="page-content">
+                        <section class="hero-section">
+                            <div class="hero-content">
+                                <h1>Creative Gallery</h1>
+                                <p class="hero-subtitle">Showcasing my creative and technical work</p>
+                                <p class="hero-description">
+                                    A visual journey through my projects, designs, and achievements. From ML
+                                    demonstrations
+                                    to creative designs for various clubs and organizations.
+                                </p>
+                            </div>
+                        </section>
+
+                        <div class="gallery-grid">
+                            <!-- ML Project Video -->
+                            <div class="gallery-item">
+                                <video controls
+                                    style="width: 100%; height: 200px; border-radius: 8px; object-fit: cover;">
+                                    <source src="detected_output.mp4.mp4" type="video/mp4">
+                                    Your browser does not support the video tag.
+                                </video>
+                                <h3>ML Project Video</h3>
+                                <p>Corals identification project demonstration showcasing real-time object detection
+                                    capabilities</p>
+                            </div>
+
+                            <!-- Energy Club Posters -->
+                            <div class="gallery-item">
+                                <img src="energy club 1.jpg" alt="Energy Poster"
+                                    style="width: 100%; height: 200px; object-fit: cover; border-radius: 8px;">
+                                <h3>Energy Club Posters</h3>
+                                <p>Creative posters for energy conservation campaigns and awareness initiatives</p>
+                            </div>
+
+                            <!-- WhatsApp Content (Energy Club) -->
+                            <div class="gallery-item">
+                                <img src="whatsapp-content1.png" alt="WhatsApp Content"
+                                    style="width: 100%; height: 200px; object-fit: cover; border-radius: 8px;">
+                                <h3>Energy Club Content</h3>
+                                <p>Social media and WhatsApp formats for digital engagement</p>
+                            </div>
+
+                            <!-- Campus Life Event Docs -->
+                            <div class="gallery-item">
+                                <img src="campus-doc1.png" alt="Campus Life"
+                                    style="width: 100%; height: 200px; object-fit: cover; border-radius: 8px;">
+                                <h3>Campus Life Content</h3>
+                                <p>Event documentation and promotional materials for major campus events</p>
+                            </div>
+
+                            <!-- NSS Content -->
+                            <div class="gallery-item">
+                                <img src="nss-content1.png" alt="NSS Content"
+                                    style="width: 100%; height: 200px; object-fit: cover; border-radius: 8px;">
+                                <h3>NSS Content</h3>
+                                <p>Social awareness campaign visuals and community service documentation</p>
+                            </div>
+
+                            <!-- Certificates -->
+                            <div class="gallery-item">
+                                <img src="certificate1.png" alt="Certificate"
+                                    style="width: 100%; height: 200px; object-fit: cover; border-radius: 8px;">
+                                <h3>Certificates</h3>
+                                <p>Professional certifications and achievements in technology and leadership</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Blog Page Content -->
+                    <div id="blogContent" class="page-content">
+                        <section class="hero-section single-column-layout">
+                            <div class="hero-content">
+                                <h1>Blog & Articles</h1>
+                                <div class="hero-content">
+                                    <p class="hero-subtitle">Sharing knowledge and insights from my development journey
+                                    </p>
+                                    <p class="hero-description">
+                                        Coming soon! This space will feature technical articles, project insights,
+                                        and thoughts on emerging technologies in AI, web development, and software
+                                        engineering.
+                                        Stay tuned for deep dives into machine learning implementations, full-stack
+                                        development
+                                        tutorials, and lessons learned from real-world projects.
+                                    </p>
+                                    <div class="hero-actions">
+                                        <button class="btn-secondary" onclick="loadPage('contact')">
+                                            Get Notified When I Publish →
+                                        </button>
+                                    </div>
+                                </div>
+                        </section>
+
+                        <div class="coding-stats">
+                            <div class="platform-card">
+                                <div class="platform-header">
+                                    <div class="platform-logo">
+                                        <div class="platform-icon" style="background: #3498db;">📝</div>
+                                        <div class="platform-name">Upcoming Blog Topics</div>
+                                    </div>
+                                </div>
+                                <div style="padding: 1rem 0;">
+                                    <p style="color: var(--text-secondary); margin-bottom: 1rem;">
+                                        I’m carving out a corner of this site for fresh thoughts, ideas, and
+                                        trend-spotting. Expect short reads on emerging tech, creative design, and
+                                        everyday inspiration—from AI’s newest twists to sustainable coding habits and
+                                        the changing culture of work.
+
+                                        It won’t be just tutorials; think stories, reflections, and conversations about
+                                        what’s shaping our world right now. Stay tuned for pieces that spark curiosity
+                                        and invite discussion!
+                                    </p>
+                                </div>
+                            </div>
+
+                            <div class="platform-card">
+                                <div class="platform-header">
+                                    <div class="platform-logo">
+                                        <div class="platform-icon" style="background: #e74c3c;">🎯</div>
+                                        <div class="platform-name">Technical Focus Areas</div>
+                                    </div>
+                                </div>
+                                <div style="padding: 1rem 0;">
+                                    <p style="color: var(--text-secondary); margin-bottom: 1rem;">
+                                        My articles will cover practical implementations, code walkthroughs,
+                                        and real-world project experiences in AI/ML, full-stack development,
+                                        and emerging technologies.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Contact Page Content -->
+                    <div id="contactContent" class="page-content">
+                        <section class="hero-section">
+                            <div class="hero-content">
+                                <h1>Let's Connect</h1>
+                                <p class="hero-subtitle">Ready to collaborate on innovative projects</p>
+                                <p class="hero-description">
+                                    Whether you have an exciting project idea, need a dedicated developer for your team,
+                                    or want to discuss the latest in tech and AI, let's connect and turn your vision
+                                    into reality with clean, efficient code.
+                                </p>
+                                <div class="hero-actions">
+                                    <a href="mailto:charusubbian@gmail.com" class="btn-primary">
+                                        Send Email →
+                                    </a>
+                                    <a href="resume.pdf" target="_blank" class="btn-secondary">
+                                        Download CV
+                                    </a>
+                                </div>
+                            </div>
+                            <div class="terminal-widget">
+                                <div class="terminal-header">
+                                    <div class="terminal-dot red"></div>
+                                    <div class="terminal-dot yellow"></div>
+                                    <div class="terminal-dot green"></div>
+                                    <div class="terminal-title">charu@dev:~$ cat contact.json</div>
+                                </div>
+                                <div class="terminal-body">
+                                    <div class="terminal-line">
+                                        <span class="terminal-output">{</span>
+                                    </div>
+                                    <div class="terminal-line">
+                                        <span class="terminal-output"> "email": "charusubbian@gmail.com",</span>
+                                    </div>
+                                    <div class="terminal-line">
+                                        <span class="terminal-output"> "phone": "+91 9025186840",</span>
+                                    </div>
+                                    <div class="terminal-line">
+                                        <span class="terminal-output"> "location": "Chennai, Tamil Nadu, IN",</span>
+                                    </div>
+                                    <div class="terminal-line">
+                                        <span class="terminal-output"> "linkedin": "linkedin.com/in/charusm",</span>
+                                    </div>
+                                    <div class="terminal-line">
+                                        <span class="terminal-output"> "github": "github.com/Charusm03",</span>
+                                    </div>
+                                    <div class="terminal-line">
+                                        <span class="terminal-output"> "status": "available_for_opportunities"</span>
+                                    </div>
+                                    <div class="terminal-line">
+                                        <span class="terminal-output">}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </section>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <script>
+        // Matrix Canvas Animation
+        class MatrixAnimation {
+            constructor(canvas) {
+                this.canvas = canvas;
+                this.ctx = canvas.getContext('2d');
+                this.chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789@#$%^&*()_+-=[]{}|;:,.<>?/~`';
+                this.fontSize = 14;
+                this.columns = 0;
+                this.drops = [];
+
+                this.resize();
+                this.init();
+                this.animate();
+
+                window.addEventListener('resize', () => this.resize());
+            }
+
+            resize() {
+                this.canvas.width = window.innerWidth;
+                this.canvas.height = window.innerHeight;
+                this.columns = Math.floor(this.canvas.width / this.fontSize);
+                this.drops = Array(this.columns).fill(1);
+            }
+
+            init() {
+                this.ctx.fillStyle = '#0d1117';
+                this.ctx.font = this.fontSize + 'px "Fira Code", monospace';
+            }
+
+            animate() {
+                this.ctx.fillStyle = 'rgba(13, 17, 23, 0.05)';
+                this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+
+                this.ctx.fillStyle = '#00d084';
+
+                for (let i = 0; i < this.drops.length; i++) {
+                    const text = this.chars[Math.floor(Math.random() * this.chars.length)];
+                    this.ctx.fillText(text, i * this.fontSize, this.drops[i] * this.fontSize);
+
+                    if (this.drops[i] * this.fontSize > this.canvas.height && Math.random() > 0.975) {
+                        this.drops[i] = 0;
+                    }
+
+                    this.drops[i]++;
+                }
+
+                requestAnimationFrame(() => this.animate());
+            }
+        }
+
+        // Real-time coding stats updater
+        async function updateCodingStats() {
+            try {
+                // Note: These would be real API calls in production
+                // For now, updating with realistic progressive values
+
+                const leetcodeSolved = document.getElementById('leetcode-solved');
+                const leetcodeRanking = document.getElementById('leetcode-ranking');
+                const leetcodeStreak = document.getElementById('leetcode-streak');
+
+                const codechefRating = document.getElementById('codechef-rating');
+                const codechefSolved = document.getElementById('codechef-solved');
+                const codechefContests = document.getElementById('codechef-contests');
+
+                const gfgScore = document.getElementById('gfg-score');
+                const gfgSolved = document.getElementById('gfg-solved');
+
+                // Simulate incremental updates (in real implementation, these would be API calls)
+                if (leetcodeSolved) {
+                    const currentSolved = parseInt(leetcodeSolved.textContent);
+                    if (Math.random() > 0.7) { // 30% chance of increment
+                        leetcodeSolved.textContent = (currentSolved + Math.floor(Math.random() * 3)).toString();
+                    }
+                }
+
+                if (codechefSolved) {
+                    const currentSolved = parseInt(codechefSolved.textContent);
+                    if (Math.random() > 0.8) { // 20% chance of increment
+                        codechefSolved.textContent = (currentSolved + Math.floor(Math.random() * 2)).toString();
+                    }
+                }
+
+                if (gfgSolved) {
+                    const currentSolved = parseInt(gfgSolved.textContent);
+                    if (Math.random() > 0.9) { // 10% chance of increment
+                        gfgSolved.textContent = (currentSolved + 1).toString();
+                        if (gfgScore) {
+                            gfgScore.textContent = (parseInt(gfgScore.textContent) + 5).toString();
+                        }
+                    }
+                }
+
+            } catch (error) {
+                console.log('Stats update simulation running...');
+            }
+        }
+
+        // Page Navigation System
+        function loadPage(pageName) {
+            // Hide all content
+            document.querySelectorAll('.page-content').forEach(content => {
+                content.classList.remove('active');
+            });
+
+            // Show selected page
+            const targetContent = document.getElementById(`${pageName}Content`);
+            if (targetContent) {
+                targetContent.classList.add('active');
+
+                // Update page title
+                const titles = {
+                    'dashboard': 'Developer Dashboard',
+                    'about': 'About Me',
+                    'projects': 'Featured Projects',
+                    'experience': 'Experience & Leadership',
+                    'gallery': 'Creative Gallery',
+                    'blog': 'Blog & Articles',
+                    'contact': 'Contact Information'
+                };
+
+                document.getElementById('pageTitle').textContent = titles[pageName] || 'Dashboard';
+
+                // Update navigation
+                updateNavigation(pageName);
+            }
+        }
+
+        function updateNavigation(activePage) {
+            // Update navbar
+            document.querySelectorAll('.nav-item a').forEach(link => {
+                link.classList.remove('active');
+            });
+
+            // Update sidebar
+            document.querySelectorAll('.sidebar-item').forEach(item => {
+                item.classList.remove('active');
+            });
+
+            // Set active states for navbar
+            const activeNavItem = Array.from(document.querySelectorAll('.nav-item a')).find(item =>
+                item.getAttribute('onclick') && item.getAttribute('onclick').includes(activePage)
+            );
+            if (activeNavItem) {
+                activeNavItem.classList.add('active');
+            }
+
+            // Set sidebar active state
+            const activeSidebarItem = Array.from(document.querySelectorAll('.sidebar-item')).find(item =>
+                item.getAttribute('onclick') && item.getAttribute('onclick').includes(activePage)
+            );
+            if (activeSidebarItem) {
+                activeSidebarItem.classList.add('active');
+            }
+        }
+
+        function openPlatform(platform) {
+            const urls = {
+                leetcode: 'https://leetcode.com/u/Charu_sm_03/',
+                codechef: 'https://www.codechef.com/users/charusm03',
+                geeksforgeeks: 'https://www.geeksforgeeks.org/user/smcharxvv/',
+                hackerrank: 'https://www.hackerrank.com/s_m_charu03',
+                codeforces: 'https://codeforces.com/profile/charusm'
+            };
+
+            if (urls[platform]) {
+                window.open(urls[platform], '_blank');
+            }
+        }
+
+        function downloadResume() {
+            // Create a download link for resume
+            const link = document.createElement('a');
+            link.href = 'resume.pdf';
+            link.download = 'Charu_SM_Resume.pdf';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        // Initialize everything when DOM is ready
+        document.addEventListener('DOMContentLoaded', () => {
+            // Initialize matrix background
+            new MatrixAnimation(document.getElementById('matrixCanvas'));
+
+            // Set initial page
+            loadPage('dashboard');
+
+            // Update timestamp
+            document.getElementById('lastUpdated').textContent = new Date().toLocaleTimeString();
+
+            // Update coding stats periodically (every 5 minutes)
+            updateCodingStats();
+            setInterval(updateCodingStats, 300000); // 5 minutes
+
+            // Add keyboard shortcuts
+            document.addEventListener('keydown', (e) => {
+                if ((e.ctrlKey || e.metaKey) && !e.shiftKey) {
+                    const shortcuts = {
+                        '1': 'dashboard',
+                        '2': 'about',
+                        '3': 'projects',
+                        '4': 'experience',
+                        '5': 'gallery',
+                        '6': 'blog',
+                        '7': 'contact'
+                    };
+
+                    if (shortcuts[e.key]) {
+                        e.preventDefault();
+                        loadPage(shortcuts[e.key]);
+                    }
+                }
+
+                if (e.key === 'Escape') {
+                    loadPage('dashboard');
+                }
+            });
+        });
+    </script>
+</body>
+
+</html>
