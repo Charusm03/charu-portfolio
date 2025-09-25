@@ -227,7 +227,86 @@
             margin-bottom: 3rem;
         }
 
-        .hero-content h1 {
+        /* About Me page title */
+        #aboutContent .hero-content h1 {
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, #8b5fbf 0%, #4ecdc4 100%);
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+            flex: auto;
+            margin-left: 2px;
+        }
+
+        /* Projects page title */
+        #projectsContent .hero-content h1 {
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, #ff6b35 0%, #f7931e 100%);
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+            flex: auto;
+            margin-left: 2px;
+        }
+
+        /* Experience page title */
+        #experienceContent .hero-content h1 {
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+            flex: auto;
+            margin-left: 2px;
+        }
+
+        /* Gallery page title */
+        #galleryContent .hero-content h1 {
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, #ee9ca7 0%, #ffdde1 50%, #a8edea 100%);
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+            flex: auto;
+            margin-left: 2px;
+        }
+
+        /* Blog page title */
+        #blogContent .hero-content h1 {
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, #92fe9d 0%, #00c9ff 100%);
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+            flex: auto;
+            margin-left: 2px;
+        }
+
+        /* Contact page title */
+        #contactContent .hero-content h1 {
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, #fc466b 0%, #3f5efb 100%);
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+            flex: auto;
+            margin-left: 2px;
+        }
+
+        /* Keep the original dashboard title as is */
+        #dashboardContent .hero-content h1 {
             font-size: 3rem;
             font-weight: 700;
             margin-bottom: 1rem;
@@ -238,6 +317,55 @@
             flex: auto;
             margin-left: 2px;
         }
+
+        /* Add subtle text shadow for better readability */
+        .hero-content h1::before {
+            content: attr(data-text);
+            position: absolute;
+            left: 0;
+            top: 0;
+            z-index: -1;
+            color: rgba(255, 255, 255, 0.1);
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Alternative: If you prefer solid colors instead of gradients */
+        #aboutContent .hero-content h1 {
+            color: #8b5fbf;
+        }
+
+        #projectsContent .hero-content h1 {
+            color: #ff6b35;
+        }
+
+        #experienceContent .hero-content h1 {
+            color: #667eea;
+        }
+
+        #galleryContent .hero-content h1 {
+            color: #ee9ca7;
+        }
+
+        #blogContent .hero-content h1 {
+            color: #92fe9d;
+        }
+
+        #contactContent .hero-content h1 {
+            color: #fc466b;
+        }
+
+        /* .hero-content h1 {
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            background: var(--gradient-primary);
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+            flex: auto;
+            margin-left: 2px;
+        }
+            */
 
         .hero-subtitle {
             font-size: 1.2rem;
@@ -696,6 +824,7 @@
             <li class="nav-item"><a href="#" onclick="loadPage('about')">About</a></li>
             <li class="nav-item"><a href="#" onclick="loadPage('projects')">Projects</a></li>
             <li class="nav-item"><a href="#" onclick="loadPage('experience')">Experience</a></li>
+            <li class="nav-item"><a href="#" onclick="loadPage('gallery')">Gallery</a></li>
             <li class="nav-item"><a href="#" onclick="loadPage('blog')">Blog</a></li>
             <li class="nav-item"><a href="#" onclick="loadPage('contact')">Contact</a></li>
         </ul>
@@ -705,26 +834,32 @@
         <div class="dashboard">
             <aside class="sidebar">
                 <div class="sidebar-section">
-                    <div class="sidebar-title">Navigation</div>
-                    <div class="sidebar-item active" onclick="loadPage('dashboard')">
-                        <div class="sidebar-icon">🏠</div>
-                        <span>Dashboard</span>
-                    </div>
-                    <div class="sidebar-item" onclick="loadPage('about')">
-                        <div class="sidebar-icon">👨‍💻</div>
-                        <span>About</span>
-                    </div>
-                    <div class="sidebar-item" onclick="loadPage('projects')">
-                        <div class="sidebar-icon">💻</div>
-                        <span>Projects</span>
-                    </div>
-                    <div class="sidebar-item" onclick="loadPage('experience')">
-                        <div class="sidebar-icon">💼</div>
-                        <span>Experience</span>
-                    </div>
-                    <div class="sidebar-item" onclick="loadPage('blog')">
-                        <div class="sidebar-icon">📝</div>
-                        <span>Blog</span>
+                    <div class="sidebar-section">
+                        <div class="sidebar-title">Navigation</div>
+                        <div class="sidebar-item active" onclick="loadPage('dashboard')">
+                            <div class="sidebar-icon">🏠</div>
+                            <span>Dashboard</span>
+                        </div>
+                        <div class="sidebar-item" onclick="loadPage('about')">
+                            <div class="sidebar-icon">👨‍💻</div>
+                            <span>About</span>
+                        </div>
+                        <div class="sidebar-item" onclick="loadPage('projects')">
+                            <div class="sidebar-icon">💻</div>
+                            <span>Projects</span>
+                        </div>
+                        <div class="sidebar-item" onclick="loadPage('experience')">
+                            <div class="sidebar-icon">💼</div>
+                            <span>Experience</span>
+                        </div>
+                        <div class="sidebar-item" onclick="loadPage('gallery')">
+                            <div class="sidebar-icon">🎨</div>
+                            <span>Gallery</span>
+                        </div>
+                        <div class="sidebar-item" onclick="loadPage('blog')">
+                            <div class="sidebar-icon">📝</div>
+                            <span>Blog</span>
+                        </div>
                     </div>
                 </div>
 
@@ -822,7 +957,7 @@
                                         <span class="terminal-command">ls skills/</span>
                                     </div>
                                     <div class="terminal-line">
-                                        <span class="terminal-output">Python JavaScript React Flask ML OpenCV IoT</span>
+                                        <span class="terminal-output"> Java React ML OpenCV</span>
                                     </div>
                                     <div class="terminal-line">
                                         <span class="terminal-prompt">charu@dev:~$</span>
@@ -877,7 +1012,7 @@
                                         <span class="stat-label">Rating</span>
                                     </div>
                                     <div class="stat-item">
-                                        <span class="stat-value" id="codechef-solved">132</span>
+                                        <span class="stat-value" id="codechef-solved">139</span>
                                         <span class="stat-label">Solved</span>
                                     </div>
                                     <div class="stat-item">
@@ -900,64 +1035,18 @@
                                 </div>
                                 <div class="platform-stats">
                                     <div class="stat-item">
-                                        <span class="stat-value" id="gfg-score">25</span>
+                                        <span class="stat-value" id="gfg-score">47</span>
                                         <span class="stat-label">Score</span>
                                     </div>
                                     <div class="stat-item">
-                                        <span class="stat-value" id="gfg-solved">15</span>
+                                        <span class="stat-value" id="gfg-solved">18</span>
                                         <span class="stat-label">Solved</span>
                                     </div>
-                                </div>
+                                </div>x
                             </div>
                         </section>
 
-                        <section class="progress-section">
-                            <div class="progress-header">
-                                <h2>Progress Tracker</h2>
-                            </div>
-                            <div class="progress-grid">
-                                <div class="progress-card">
-                                    <div class="progress-title">DSA Problems Solved</div>
-                                    <div class="progress-bar">
-                                        <div class="progress-fill" style="width: 61%"></div>
-                                    </div>
-                                    <div class="progress-text">
-                                        <span>607/1000</span>
-                                        <span>61%</span>
-                                    </div>
-                                </div>
-                                <div class="progress-card">
-                                    <div class="progress-title">Contest Participation</div>
-                                    <div class="progress-bar">
-                                        <div class="progress-fill" style="width: 46%"></div>
-                                    </div>
-                                    <div class="progress-text">
-                                        <span>23/50</span>
-                                        <span>46%</span>
-                                    </div>
-                                </div>
-                                <div class="progress-card">
-                                    <div class="progress-title">Project Completion</div>
-                                    <div class="progress-bar">
-                                        <div class="progress-fill" style="width: 85%"></div>
-                                    </div>
-                                    <div class="progress-text">
-                                        <span>17/20</span>
-                                        <span>85%</span>
-                                    </div>
-                                </div>
-                                <div class="progress-card">
-                                    <div class="progress-title">Skills Mastered</div>
-                                    <div class="progress-bar">
-                                        <div class="progress-fill" style="width: 72%"></div>
-                                    </div>
-                                    <div class="progress-text">
-                                        <span>18/25</span>
-                                        <span>72%</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </section>
+
                     </div>
 
                     <!-- About Page Content -->
@@ -1591,6 +1680,60 @@
                                     demonstrations
                                     to creative designs for various clubs and organizations.
                                 </p>
+                            </div>
+                            <div class="terminal-widget">
+                                <div class="terminal-header">
+                                    <div class="terminal-dot red"></div>
+                                    <div class="terminal-dot yellow"></div>
+                                    <div class="terminal-dot green"></div>
+                                    <div class="terminal-title">charu@dev:~$ ls gallery/</div>
+                                </div>
+                                <div class="terminal-body">
+                                    <div class="terminal-line">
+                                        <span class="terminal-output">total 8 directories, 15 files</span>
+                                    </div>
+                                    <div class="terminal-line">
+                                        <span class="terminal-output">drwxr-xr-x ml_projects/</span>
+                                    </div>
+                                    <div class="terminal-line">
+                                        <span class="terminal-output">drwxr-xr-x energy_club/</span>
+                                    </div>
+                                    <div class="terminal-line">
+                                        <span class="terminal-output">drwxr-xr-x campus_life/</span>
+                                    </div>
+                                    <div class="terminal-line">
+                                        <span class="terminal-output">drwxr-xr-x nss_content/</span>
+                                    </div>
+                                    <div class="terminal-line">
+                                        <span class="terminal-output">drwxr-xr-x certificates/</span>
+                                    </div>
+                                    <div class="terminal-line">
+                                        <span class="terminal-output">drwxr-xr-x design_work/</span>
+                                    </div>
+                                    <div class="terminal-line">
+                                        <span class="terminal-output">-rw-r--r-- coral_detection_demo.mp4</span>
+                                    </div>
+                                    <div class="terminal-line">
+                                        <span class="terminal-output">-rw-r--r-- techsaavy_posters.jpg</span>
+                                    </div>
+                                    <div class="terminal-line">
+                                        <span class="terminal-prompt">charu@dev:~$</span>
+                                        <span class="terminal-command"> cat gallery_stats.txt</span>
+                                    </div>
+                                    <div class="terminal-line">
+                                        <span class="terminal-output">Projects documented: 15+</span>
+                                    </div>
+                                    <div class="terminal-line">
+                                        <span class="terminal-output">Designs created: 50+</span>
+                                    </div>
+                                    <div class="terminal-line">
+                                        <span class="terminal-output">Events covered: 20+</span>
+                                    </div>
+                                    <div class="terminal-line">
+                                        <span class="terminal-prompt">charu@dev:~$</span>
+                                        <span class="typing-cursor"></span>
+                                    </div>
+                                </div>
                             </div>
                         </section>
 
